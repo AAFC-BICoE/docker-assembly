@@ -1,7 +1,7 @@
 # Dockerfile for OLCspades genome assembly pipeline
 FROM ubuntu:14.04
 
-MAINTAINER Dr. Adam G. Koziol <adam.koziol@inspection.gc.ca>
+MAINTAINER Mike Knowles <michael.knowles@canada.ca>
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -10,8 +10,6 @@ COPY sources.list /etc/apt/sources.list
 # Install various required softwares
 RUN apt-get update -y -qq && apt-get install -y --force-yes \
 	bash \
-	nfs-common \
-	nfs-client \
 	alien \
 	git \
 	curl \
@@ -23,10 +21,10 @@ RUN apt-get update -y -qq && apt-get install -y --force-yes \
 	software-properties-common \
 	nano \
 	xsltproc
-RUN echo 'hello'
 
 # Install bcl2fastq
 ADD accessoryfiles /accessoryfiles
+RUN cd /accessoryfiles ; wget ftp://webdata:webdata@ussd-ftp.illumina.com/Downloads/Software/bcl2fastq/bcl2fastq-1.8.4-Linux-x86_64.rpm
 RUN alien -i /accessoryfiles/bcl2fastq-1.8.4-Linux-x86_64.rpm
 # Remove the rpm
 RUN rm /accessoryfiles/bcl2fastq-1.8.4-Linux-x86_64.rpm
