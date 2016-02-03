@@ -1,14 +1,16 @@
 # Dockerfile for OLCspades genome assembly pipeline
-FROM ubuntu:14.04
+FROM ubuntu:14.04.3
 
 MAINTAINER Mike Knowles <michael.knowles@canada.ca>
 
 ENV DEBIAN_FRONTEND noninteractive
+RUN locale-gen en_US en_US.UTF-8
+RUN dpkg-reconfigure locales
 
 COPY sources.list /etc/apt/sources.list
-
 # Install various required softwares
-RUN apt-get update -y -qq && apt-get install -y --force-yes \
+RUN apt-get update -y -qq
+RUN apt-get install -y --force-yes \
 	bash \
 	alien \
 	git \
@@ -20,51 +22,62 @@ RUN apt-get update -y -qq && apt-get install -y --force-yes \
 	libbz2-dev \
 	software-properties-common \
 	nano \
-	xsltproc
-
-# Install bcl2fastq
-ADD accessoryfiles /accessoryfiles
-RUN cd /accessoryfiles ; wget ftp://webdata:webdata@ussd-ftp.illumina.com/Downloads/Software/bcl2fastq/bcl2fastq-1.8.4-Linux-x86_64.rpm
-RUN alien -i /accessoryfiles/bcl2fastq-1.8.4-Linux-x86_64.rpm
-# Remove the rpm
-RUN rm /accessoryfiles/bcl2fastq-1.8.4-Linux-x86_64.rpm
-# Edited Config.pm supplied with bcl2fastq to comment out sub _validateEland subroutine that was causing bcl2fastq to fail with compilation errors
-COPY Config.pm /usr/local/lib/bcl2fastq-1.8.4/perl/Casava/Alignment/Config.pm
-
-# Install XML:Simple and dependencies for bcl2fastq 
-RUN curl -L http://cpanmin.us | perl - App::cpanminus
-RUN cpanm --mirror http://mirror.csclub.uwaterloo.ca/CPAN/ XML::Simple --mirror-only --force
+	xsltproc \
+	fastqc \
+	wget \
+	unzip \
+	python \
+	python-setuptools
 
 # Install bbmap and bbduk
 RUN echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections
+RUN cat /etc/resolv.conf
 RUN add-apt-repository -y ppa:webupd8team/java
-RUN apt-get update -qq -y && apt-get install -y --force-yes \
+# Install various required softwares
+RUN apt-get update -y -qq
+RUN apt-get install -y --force-yes \
 	oracle-java7-installer \
 	oracle-java7-set-default  && \
     	rm -rf /var/cache/oracle-jdk7-installer  && \
     	apt-get clean  && \
     	rm -rf /var/lib/apt/lists/*
 
-# Add bbmap files to the path
-ENV PATH /accessoryfiles/bbmap:$PATH
 
-# Install fastqc
-ENV PATH /accessoryfiles/FastQC:$PATH
+# Install bcl2fastq
+ADD accessoryfiles /accessoryfiles
+ENV BCL=bcl2fastq-1.8.4-Linux-x86_64.rpm
+WORKDIR /accessoryfiles
+# Download FastQC
+RUN wget http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.4.zip && unzip fastqc_v0.11.4.zip && \
+    wget http://downloads.sourceforge.net/project/bbmap/BBMap_35.82.tar.gz && tar -xf BBMap_35.82.tar.gz && \
+    wget http://spades.bioinf.spbau.ru/release3.6.2/SPAdes-3.6.2-Linux.tar.gz && tar -xf SPAdes-3.6.2-Linux.tar.gz
 
-# Install SPAdes
-ENV PATH /accessoryfiles/spades:$PATH
 
-# Mount NAS:
-# must run container in privileged mode (--privileged)
-RUN locale-gen en_US en_US.UTF-8
-RUN dpkg-reconfigure locales
+# Add FastQC, bbmap, SPAdes files to the path
+ENV PATH /accessoryfiles/FastQC:/accessoryfiles/bbmap:/accessoryfiles/SPAdes-3.6.2-Linux/bin:/accessoryfiles/spades:$PATH
 
-COPY mount_nfs.sh /root/mount_nfs.sh
+## Check if $BCL file exists
+#RUN if [ ! -f $BCL ]; then ftp://webdata:webdata@ussd-ftp.illumina.com/Downloads/Software/bcl2fastq/$BCL; fi
+#RUN alien -i bcl2fastq-1.8.4-Linux-x86_64.rpm
+## Remove the rpm
+#RUN rm /accessoryfiles/bcl2fastq-1.8.4-Linux-x86_64.rpm
+## Edited Config.pm supplied with bcl2fastq to comment out sub _validateEland subroutine that was causing bcl2fastq to fail with compilation errors
+#COPY Config.pm /usr/local/lib/bcl2fastq-1.8.4/perl/Casava/Alignment/Config.pm
+#
+## Install XML:Simple and dependencies for bcl2fastq
+#RUN curl -L http://cpanmin.us | perl - App::cpanminus
+#RUN cpanm --mirror http://mirror.csclub.uwaterloo.ca/CPAN/ XML::Simple --mirror-only --force
+
+
 
 # run this script in your cmd or entrypoint script to mount your nfs mounts
-RUN chmod +x /root/mount_nfs.sh
-ENTRYPOINT ["/root/mount_nfs.sh"]
-
+#RUN chmod +x /root/mount_nfs.sh
+#ENTRYPOINT ["/root/mount_nfs.sh"]
+CMD 'bin/bash'
+COPY pipeline /accessoryfiles/spades
+ADD .git /accessoryfiles/spades
+WORKDIR /accessoryfiles/spades
+RUN python2.7 setup.py install
 # Useful commands
 #docker build -t remotepythondocker .
 #docker run -e NFS_MOUNT=192.168.1.18:/mnt/zvolume1 --privileged -it -v /home/blais/PycharmProjects/SPAdesPipeline:/spades -v /media/miseq/:/media/miseq -v /home/blais/Downloads/accessoryfiles:/accessoryfiles --name pythondocker remotepythondocker
