@@ -27,7 +27,8 @@ RUN apt-get install -y --force-yes \
 	wget \
 	unzip \
 	python \
-	python-setuptools
+	python-pip \
+	python-dev
 
 # Install bbmap and bbduk
 RUN echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections
@@ -73,16 +74,16 @@ ENV PATH /accessoryfiles/FastQC:/accessoryfiles/bbmap:/accessoryfiles/SPAdes-3.6
 # run this script in your cmd or entrypoint script to mount your nfs mounts
 #RUN chmod +x /root/mount_nfs.sh
 #ENTRYPOINT ["/root/mount_nfs.sh"]
-ENV PYTHONPATH=/accessoryfiles/SPAdes-3.6.2-Linux/bin
-CMD 'bin/bash'
+#ENV PYTHONPATH=/accessoryfiles/SPAdes-3.6.2-Linux/bin
+CMD '/bin/bash'
 COPY pipeline /accessoryfiles/spades
 ADD .git /accessoryfiles/spades
 WORKDIR /accessoryfiles/spades
-RUN python2.7 setup.py install
+RUN python setup.py install
 COPY docker-entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["assemble"]
-# Useful commands
+# Useful commandsst
 #docker build -t remotepythondocker .
 #docker run -e NFS_MOUNT=192.168.1.18:/mnt/zvolume1 --privileged -it -v /home/blais/PycharmProjects/SPAdesPipeline:/spades -v /media/miseq/:/media/miseq -v /home/blais/Downloads/accessoryfiles:/accessoryfiles --name pythondocker remotepythondocker
 #docker rm pythondocker
