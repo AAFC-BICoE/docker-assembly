@@ -28,7 +28,8 @@ RUN apt-get install -y --force-yes \
 	unzip \
 	python \
 	python-pip \
-	python-dev
+	python-dev \
+	python-matplotlib
 
 # Install bbmap and bbduk
 RUN echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections
@@ -51,11 +52,12 @@ WORKDIR /accessoryfiles
 # Download FastQC
 RUN wget http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.4.zip && unzip fastqc_v0.11.4.zip && \
     wget http://downloads.sourceforge.net/project/bbmap/BBMap_35.82.tar.gz && tar -xf BBMap_35.82.tar.gz && \
-    wget http://spades.bioinf.spbau.ru/release3.6.2/SPAdes-3.6.2-Linux.tar.gz && tar -xf SPAdes-3.6.2-Linux.tar.gz
+    wget http://spades.bioinf.spbau.ru/release3.6.2/SPAdes-3.6.2-Linux.tar.gz && tar -xf SPAdes-3.6.2-Linux.tar.gz &&\
+    wget https://downloads.sourceforge.net/project/quast/quast-3.2.tar.gz && tar -xzf quast-3.2.tar.gz
 
 
 # Add FastQC, bbmap, SPAdes files to the path
-ENV PATH /accessoryfiles/FastQC:/accessoryfiles/bbmap:/accessoryfiles/SPAdes-3.6.2-Linux/bin:/accessoryfiles/spades:$PATH
+ENV PATH /accessoryfiles/quast-3.2:/accessoryfiles/FastQC:/accessoryfiles/bbmap:/accessoryfiles/SPAdes-3.6.2-Linux/bin:/accessoryfiles/spades:$PATH
 
 ## Check if $BCL file exists
 #RUN if [ ! -f $BCL ]; then ftp://webdata:webdata@ussd-ftp.illumina.com/Downloads/Software/bcl2fastq/$BCL; fi
@@ -74,7 +76,7 @@ ENV PATH /accessoryfiles/FastQC:/accessoryfiles/bbmap:/accessoryfiles/SPAdes-3.6
 # run this script in your cmd or entrypoint script to mount your nfs mounts
 #RUN chmod +x /root/mount_nfs.sh
 #ENTRYPOINT ["/root/mount_nfs.sh"]
-#ENV PYTHONPATH=/accessoryfiles/SPAdes-3.6.2-Linux/bin
+ENV PYTHONPATH=/accessoryfiles/SPAdes-3.6.2-Linux/bin:/accessoryfiles/quast-3.2:$PYTHONPATH
 CMD '/bin/bash'
 COPY pipeline /accessoryfiles/spades
 ADD .git /accessoryfiles/spades
