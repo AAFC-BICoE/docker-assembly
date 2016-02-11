@@ -61,10 +61,14 @@ RUN wget http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.4
 RUN for a in $(ls -1 *.tar.gz); do tar -zxvf $a; done
 RUN mkdir /accessoryfiles/HMM
 WORKDIR /accessoryfiles/HMM
-RUN for clade in metazoa bacteria eukaryota fungi; do wget http://busco.ezlab.org/files/${clade}_buscos.tar.gz; tar -zxf ${clade}_buscos.tar.gz; done
+RUN for clade in bacteria eukaryota fungi; do wget http://busco.ezlab.org/files/${clade}_buscos.tar.gz; tar -zxf ${clade}_buscos.tar.gz; done
 
 # Add FastQC, bbmap, SPAdes files to the path
-ENV PATH /accessoryfiles/augustus.2.5.5/bin:/accessoryfiles/quast-3.2:/accessoryfiles/FastQC:/accessoryfiles/bbmap:/accessoryfiles/SPAdes-3.6.2-Linux/bin:/accessoryfiles/spades:$PATH
+WORKDIR /accessoryfiles
+RUN mv SPAdes* SPAdes && \
+    mv BBMap* BBMap && \
+    mv
+#ENV PATH /accessoryfiles/augustus.2.5.5/bin:/accessoryfiles/quast-3.2:/accessoryfiles/FastQC:/accessoryfiles/bbmap:/accessoryfiles/SPAdes-3.6.2-Linux/bin:/accessoryfiles/spades:$PATH
 ENV AUGUSTUS_CONFIG_PATH /accessoryfiles/augustus.2.5.5/config/
 
 ## Check if $BCL file exists

@@ -1,6 +1,20 @@
 #!/usr/bin/env bash
 
 ARG=""
+# Add subdirectories to the PATH
+for d in /accessoryfiles/*/; do
+    if [ -d "${d}bin" ] ; then
+        PATH="$PATH:${d}bin";
+    else
+        PATH="$PATH:$d";
+    fi;
+done
+
+# Add AUGUSTUS_CONFIG_PATH if not already added
+if [ ! -d $AUGUSTUS_CONFIG_PATH ]; then
+    AUGUSTUS_CONFIG_PATH=$(find /accessoryfiles -name config -type d  -printf "%p")
+fi;
+
 
 if [ "$1" = "assemble" ]; then
 
@@ -29,6 +43,9 @@ if [ "$1" = "assemble" ]; then
         ARG+=" /data"
     else
         ARG+=" $IN"
+    fi
+    if [ -n "$CLADE" ]; then
+        ARG+=" --clade $CLADE"
     fi
 
     echo $ARG
