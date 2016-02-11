@@ -29,14 +29,16 @@ RUN apt-get install -y --force-yes \
 	python \
 	python-pip \
 	python-dev \
-	python-matplotlib
+	python-matplotlib \
+	ncbi-blast+ \
+	hmmer
 
 # Install bbmap and bbduk
 RUN echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections
 RUN cat /etc/resolv.conf
 RUN add-apt-repository -y ppa:webupd8team/java
-# Install various required softwares
-RUN apt-get update -y -qq
+# Install various required sofppa:webupd8team/javatwares
+RUN apt-get update -y
 RUN apt-get install -y --force-yes \
 	oracle-java7-installer \
 	oracle-java7-set-default  && \
@@ -51,13 +53,19 @@ ENV BCL=bcl2fastq-1.8.4-Linux-x86_64.rpm
 WORKDIR /accessoryfiles
 # Download FastQC
 RUN wget http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.4.zip && unzip fastqc_v0.11.4.zip && \
-    wget http://downloads.sourceforge.net/project/bbmap/BBMap_35.82.tar.gz && tar -xf BBMap_35.82.tar.gz && \
-    wget http://spades.bioinf.spbau.ru/release3.6.2/SPAdes-3.6.2-Linux.tar.gz && tar -xf SPAdes-3.6.2-Linux.tar.gz &&\
-    wget https://downloads.sourceforge.net/project/quast/quast-3.2.tar.gz && tar -xzf quast-3.2.tar.gz
-
+    wget http://downloads.sourceforge.net/project/bbmap/BBMap_35.82.tar.gz &&  \
+    wget http://spades.bioinf.spbau.ru/release3.6.2/SPAdes-3.6.2-Linux.tar.gz &&\
+    wget https://downloads.sourceforge.net/project/quast/quast-3.2.tar.gz && \
+    wget http://augustus.gobics.de/binaries/augustus.2.5.5.tar.gz && \
+    wget http://busco.ezlab.org/files/BUSCO_v1.1b1.tar.gz
+RUN for a in $(ls -1 *.tar.gz); do tar -zxvf $a; done
+RUN mkdir /accessoryfiles/HMM
+WORKDIR /accessoryfiles/HMM
+RUN for clade in metazoa bacteria eukaryota fungi; do wget http://busco.ezlab.org/files/${clade}_buscos.tar.gz; tar -zxf ${clade}_buscos.tar.gz; done
 
 # Add FastQC, bbmap, SPAdes files to the path
-ENV PATH /accessoryfiles/quast-3.2:/accessoryfiles/FastQC:/accessoryfiles/bbmap:/accessoryfiles/SPAdes-3.6.2-Linux/bin:/accessoryfiles/spades:$PATH
+ENV PATH /accessoryfiles/augustus.2.5.5/bin:/accessoryfiles/quast-3.2:/accessoryfiles/FastQC:/accessoryfiles/bbmap:/accessoryfiles/SPAdes-3.6.2-Linux/bin:/accessoryfiles/spades:$PATH
+ENV AUGUSTUS_CONFIG_PATH /accessoryfiles/augustus.2.5.5/config/
 
 ## Check if $BCL file exists
 #RUN if [ ! -f $BCL ]; then ftp://webdata:webdata@ussd-ftp.illumina.com/Downloads/Software/bcl2fastq/$BCL; fi
@@ -85,7 +93,6 @@ RUN python setup.py install
 COPY docker-entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["assemble"]
-ADD data /data
 # Useful commandsst
 #docker build -t remotepythondocker .
 #docker run -e NFS_MOUNT=192.168.1.18:/mnt/zvolume1 --privileged -it -v /home/blais/PycharmProjects/SPAdesPipeline:/spades -v /media/miseq/:/media/miseq -v /home/blais/Downloads/accessoryfiles:/accessoryfiles --name pythondocker remotepythondocker
