@@ -63,11 +63,7 @@ RUN mkdir /accessoryfiles/HMM
 WORKDIR /accessoryfiles/HMM
 RUN for clade in bacteria eukaryota fungi; do wget http://busco.ezlab.org/files/${clade}_buscos.tar.gz; tar -zxf ${clade}_buscos.tar.gz; done
 
-# Add FastQC, bbmap, SPAdes files to the path
-WORKDIR /accessoryfiles
-RUN mv SPAdes* SPAdes && \
-    mv BBMap* BBMap && \
-    mv
+
 #ENV PATH /accessoryfiles/augustus.2.5.5/bin:/accessoryfiles/quast-3.2:/accessoryfiles/FastQC:/accessoryfiles/bbmap:/accessoryfiles/SPAdes-3.6.2-Linux/bin:/accessoryfiles/spades:$PATH
 ENV AUGUSTUS_CONFIG_PATH /accessoryfiles/augustus.2.5.5/config/
 
@@ -88,6 +84,7 @@ ENV AUGUSTUS_CONFIG_PATH /accessoryfiles/augustus.2.5.5/config/
 # run this script in your cmd or entrypoint script to mount your nfs mounts
 #RUN chmod +x /root/mount_nfs.sh
 #ENTRYPOINT ["/root/mount_nfs.sh"]
+RUN pip install biopython argparse
 ENV PYTHONPATH=/accessoryfiles/SPAdes-3.6.2-Linux/bin:/accessoryfiles/quast-3.2:$PYTHONPATH
 CMD '/bin/bash'
 COPY pipeline /accessoryfiles/spades

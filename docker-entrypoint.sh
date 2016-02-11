@@ -9,10 +9,11 @@ for d in /accessoryfiles/*/; do
         PATH="$PATH:$d";
     fi;
 done
+export PATH=$PATH
 
 # Add AUGUSTUS_CONFIG_PATH if not already added
 if [ ! -d $AUGUSTUS_CONFIG_PATH ]; then
-    AUGUSTUS_CONFIG_PATH=$(find /accessoryfiles -name config -type d  -printf "%p")
+    export AUGUSTUS_CONFIG_PATH=$(find /accessoryfiles -name config -type d  -printf "%p")
 fi;
 
 
