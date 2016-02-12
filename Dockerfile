@@ -59,9 +59,10 @@ RUN wget http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.4
     wget http://augustus.gobics.de/binaries/augustus.2.5.5.tar.gz && \
     wget http://busco.ezlab.org/files/BUSCO_v1.1b1.tar.gz
 RUN for a in $(ls -1 *.tar.gz); do tar -zxvf $a; done
-RUN mkdir /accessoryfiles/HMM
-WORKDIR /accessoryfiles/HMM
-RUN for clade in bacteria eukaryota fungi; do wget http://busco.ezlab.org/files/${clade}_buscos.tar.gz; tar -zxf ${clade}_buscos.tar.gz; done
+RUN rm *.tar.gz && rm *.zip
+RUN mkdir /HMM
+WORKDIR /HMM
+RUN for clade in bacteria eukaryota fungi; do wget http://busco.ezlab.org/files/${clade}_buscos.tar.gz; tar -zxf ${clade}_buscos.tar.gz; rm ${clade}_buscos.tar.gz; done
 
 
 #ENV PATH /accessoryfiles/augustus.2.5.5/bin:/accessoryfiles/quast-3.2:/accessoryfiles/FastQC:/accessoryfiles/bbmap:/accessoryfiles/SPAdes-3.6.2-Linux/bin:/accessoryfiles/spades:$PATH
