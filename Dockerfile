@@ -7,63 +7,56 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN locale-gen en_US en_US.UTF-8
 RUN dpkg-reconfigure locales
 
-COPY sources.list /etc/apt/sources.list
+#COPY sources.list /etc/apt/sources.list
 # Install various required softwares
 RUN apt-get update -y -qq
 RUN apt-get install -y --force-yes \
 	bash \
-	alien \
-	git \
-	curl \
 	libexpat1-dev \
 	libxml2-dev \
 	libxslt-dev \
 	zlib1g-dev \
 	libbz2-dev \
-	software-properties-common \
 	nano \
 	xsltproc \
 	fastqc \
-	wget \
-	unzip \
 	python \
-	python-pip \
-	python-dev \
 	python-matplotlib \
 	ncbi-blast+ \
-	hmmer
+	hmmer \
+	openjdk-7-jdk
 
-# Install bbmap and bbduk
-RUN echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections
-RUN cat /etc/resolv.conf
-RUN add-apt-repository -y ppa:webupd8team/java
-# Install various required sofppa:webupd8team/javatwares
-RUN apt-get update -y
-RUN apt-get install -y --force-yes \
-	oracle-java7-installer \
-	oracle-java7-set-default  && \
-    	rm -rf /var/cache/oracle-jdk7-installer  && \
-    	apt-get clean  && \
-    	rm -rf /var/lib/apt/lists/*
+## Install bbmap and bbduk
+#RUN echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections
+#RUN cat /etc/resolv.conf
+#RUN apt-get install add-apt-repository -y ppa:webupd8team/java
+## Install various required sofppa:webupd8team/javatwares
+#RUN apt-get update -y
+#RUN apt-get install -y --force-yes software-properties-common &&\
+#    apt-get install -y --force-yes \
+#	oracle-java7-installer \
+#	oracle-java7-set-default  && \
+#    	rm -rf /var/cache/oracle-jdk7-installer  && \
+#    	apt-get clean  && \
+#    	rm -rf /var/lib/apt/lists/* && \
+#    	apt-get remove --auto-remove  -y --force-yes software-properties-common
 
 
 # Install bcl2fastq
 ADD accessoryfiles /accessoryfiles
 ENV BCL=bcl2fastq-1.8.4-Linux-x86_64.rpm
-WORKDIR /accessoryfiles
-# Download FastQC
-RUN wget http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.4.zip && unzip fastqc_v0.11.4.zip && \
-    wget http://downloads.sourceforge.net/project/bbmap/BBMap_35.82.tar.gz &&  \
-    wget http://spades.bioinf.spbau.ru/release3.6.2/SPAdes-3.6.2-Linux.tar.gz &&\
-    wget https://downloads.sourceforge.net/project/quast/quast-3.2.tar.gz && \
-    wget http://augustus.gobics.de/binaries/augustus.2.5.5.tar.gz && \
-    wget http://busco.ezlab.org/files/BUSCO_v1.1b1.tar.gz
-RUN for a in $(ls -1 *.tar.gz); do tar -zxvf $a; done
-RUN rm *.tar.gz && rm *.zip
-RUN mkdir /HMM
-WORKDIR /HMM
-RUN for clade in bacteria eukaryota fungi; do wget http://busco.ezlab.org/files/${clade}_buscos.tar.gz; tar -zxf ${clade}_buscos.tar.gz; rm ${clade}_buscos.tar.gz; done
-
+#WORKDIR /accessoryfiles
+## Download FastQC
+#RUN apt-get install -y --force-yes wget unzip && \
+#    wget http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.4.zip && unzip fastqc_v0.11.4.zip && \
+#    wget http://downloads.sourceforge.net/project/bbmap/BBMap_35.82.tar.gz &&  \
+#    wget http://spades.bioinf.spbau.ru/release3.6.2/SPAdes-3.6.2-Linux.tar.gz &&\
+#    wget https://downloads.sourceforge.net/project/quast/quast-3.2.tar.gz && \
+#    wget http://augustus.gobics.de/binaries/augustus.2.5.5.tar.gz && \
+#    wget http://busco.ezlab.org/files/BUSCO_v1.1b1.tar.gz &&\
+#    for clade in bacteria eukaryota fungi; do wget http://busco.ezlab.org/files/${clade}_buscos.tar.gz; tar -zxf ${clade}_buscos.tar.gz; rm ${clade}_buscos.tar.gz; done &&\
+#    apt-get remove --auto-remove  -y --force-yes wget unzip && \
+#    for a in $(ls -1 *.tar.gz); do tar -zxvf $a; rm $a; done && rm *.zip
 
 #ENV PATH /accessoryfiles/augustus.2.5.5/bin:/accessoryfiles/quast-3.2:/accessoryfiles/FastQC:/accessoryfiles/bbmap:/accessoryfiles/SPAdes-3.6.2-Linux/bin:/accessoryfiles/spades:$PATH
 ENV AUGUSTUS_CONFIG_PATH /accessoryfiles/augustus.2.5.5/config/
@@ -85,13 +78,19 @@ ENV AUGUSTUS_CONFIG_PATH /accessoryfiles/augustus.2.5.5/config/
 # run this script in your cmd or entrypoint script to mount your nfs mounts
 #RUN chmod +x /root/mount_nfs.sh
 #ENTRYPOINT ["/root/mount_nfs.sh"]
-RUN pip install biopython argparse
+COPY pipeline /spades
+ADD .git /spades
+WORKDIR /spades
+
+RUN apt-get install -y --force-yes python-pip python-dev git && \
+    pip install biopython argparse regex && \
+    pip install --upgrade setuptools &&\
+    python setup.py install &&\
+    apt-get remove --auto-remove  -y --force-yes python-dev python-pip git
+
+
 ENV PYTHONPATH=/accessoryfiles/SPAdes-3.6.2-Linux/bin:/accessoryfiles/quast-3.2:$PYTHONPATH
-CMD '/bin/bash'
-COPY pipeline /accessoryfiles/spades
-ADD .git /accessoryfiles/spades
-WORKDIR /accessoryfiles/spades
-RUN python setup.py install
+
 COPY docker-entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["assemble"]
