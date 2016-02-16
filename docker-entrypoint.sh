@@ -51,4 +51,6 @@ if [ "$1" = "assemble" ]; then
 
     echo $ARG
     exec MBBspades $ARG
+    # Delete compiled python files to check whether this would reduce SPAdes issues
+    find /accessoryfiles -name '*.pyc' -delete
 fi
