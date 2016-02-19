@@ -73,9 +73,17 @@ def execute(command, outfile=""):
     # Initialise the starting time
     start = int(time.time())
     maxtime = 0
-    print command
+    # Removing Shell=True to prevent excess memory use thus shlex split is needed
+    if type(command) is not list:
+        import shlex
+        command = shlex.split(command)
     # Run the commands - direct stdout to PIPE and stderr to stdout
-    process = Popen(command, shell=True, stdout=PIPE, stderr=STDOUT)
+    # DO NOT USE subprocess.PIPE if not writing it!
+    if outfile:
+        process = Popen(command, stdout=PIPE, stderr=STDOUT)
+    else:
+        DEVNULL = open(os.devnull, 'wb')
+        process = Popen(command, stdout=DEVNULL, stderr=STDOUT)
     # Write the initial time
     sys.stdout.write('[{:}] '.format(time.strftime('%H:%M:%S')))
     # Create the output file - if not provided, then nothing should happen
@@ -144,23 +152,10 @@ def filer(filelist, extension='fastq'):
 
 
 def relativesymlink(src_file, dest_file):
-    """
-    https://stackoverflow.com/questions/9793631/creating-a-relative-symlink-in-python-without-using-os-chdir
-    :param src_file: the file to be linked
-    :param dest_file: the path and filename to which the file is to be linked
-    """
-    # Perform relative symlinking
-    try:
-        os.symlink(
-            # Find the relative path for the source file and the destination file
-            os.path.relpath(src_file),
-            os.path.relpath(dest_file)
-        )
-    # Except os errors
-    except OSError as exception:
-        # If the os error is anything but directory exists, then raise
-        if exception.errno != errno.EEXIST:
-            raise
+    ret = get_version(['ln', '-s', '-r', src_file, dest_file])
+    if ret and 'File exists' not in ret:
+            raise Exception(ret)
+
 
 
 class GenObject(object):
