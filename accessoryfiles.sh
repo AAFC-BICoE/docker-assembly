@@ -30,3 +30,5 @@ for a in $(ls -1 *.zip); do
  unzip $a;
  rm $a;
 done
+
+cd qualimap_v2.2 && ./configure --without-curses && make
