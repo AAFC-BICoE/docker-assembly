@@ -16,6 +16,10 @@ if [ ! -d $AUGUSTUS_CONFIG_PATH ]; then
     export AUGUSTUS_CONFIG_PATH=$(find /accessoryfiles -name config -type d  -printf "%p")
 fi;
 
+if command -v qualimap >/dev/null 2>&1; then
+    sed -i 's/-XX:MaxPermSize=1024m"/-XX:MaxPermSize=1024m -Djava.awt.headless=true"/' $(which qualimap)
+fi;
+
 
 if [ "$1" = "assemble" ]; then
 
