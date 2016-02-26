@@ -44,14 +44,18 @@ if [ "$1" = "assemble" ]; then
     if [ -n "$BASIC" ]; then
         ARG+=" -b $BASIC"
     fi
+    if [ -n "$FASTQ_DEST" ]; then
+        ARG+=" -F"
+    fi
+    if [ -n "$CLADE" ]; then
+        ARG+=" --clade $CLADE"
+    fi
     if [ -z "$IN" ]; then
         ARG+=" /data"
     else
         ARG+=" $IN"
     fi
-    if [ -n "$CLADE" ]; then
-        ARG+=" --clade $CLADE"
-    fi
+
 
     echo $ARG
     exec MBBspades $ARG
