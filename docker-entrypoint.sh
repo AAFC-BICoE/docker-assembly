@@ -44,7 +44,7 @@ if [ "$1" = "assemble" ]; then
     if [ -n "$BASIC" ]; then
         ARG+=" -b $BASIC"
     fi
-    if [ -n "$FASTQ_DEST" ]; then
+    if [ -n "$FASTQ" ]; then
         ARG+=" -F"
     fi
     if [ -n "$CLADE" ]; then
