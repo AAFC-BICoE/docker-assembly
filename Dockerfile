@@ -78,15 +78,19 @@ ENV AUGUSTUS_CONFIG_PATH /accessoryfiles/augustus.2.5.5/config/
 # run this script in your cmd or entrypoint script to mount your nfs mounts
 #RUN chmod +x /root/mount_nfs.sh
 #ENTRYPOINT ["/root/mount_nfs.sh"]
-COPY pipeline /spades
-ADD .git /spades
-WORKDIR /spades
+#COPY pipeline /spades
+#ADD .git /spades
+#WORKDIR /spades
 
 RUN apt-get install -y --force-yes python-pip python-dev git && \
     pip install biopython argparse regex && \
-    pip install --upgrade setuptools &&\
-    python setup.py install &&\
-    apt-get remove --auto-remove  -y --force-yes python-dev python-pip git
+    pip install --upgrade setuptools
+COPY pipeline /spades
+ADD .git /spades
+WORKDIR /spades
+RUN python setup.py install
+#&&\
+#    apt-get remove --auto-remove  -y --force-yes python-dev python-pip git
 
 
 ENV PYTHONPATH=/accessoryfiles/SPAdes-3.6.2-Linux/bin:/accessoryfiles/quast-3.2:$PYTHONPATH
