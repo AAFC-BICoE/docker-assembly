@@ -83,7 +83,7 @@ ENV AUGUSTUS_CONFIG_PATH /accessoryfiles/augustus.2.5.5/config/
 #WORKDIR /spades
 
 RUN apt-get install -y --force-yes python-pip python-dev git && \
-    pip install biopython argparse regex && \
+    pip install biopython argparse regex PyYAML && \
     pip install --upgrade setuptools
 COPY pipeline /spades
 ADD .git /spades
