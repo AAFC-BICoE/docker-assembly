@@ -26,21 +26,6 @@ RUN apt-get install -y --force-yes \
 	hmmer \
 	openjdk-7-jdk
 
-## Install bbmap and bbduk
-#RUN echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections
-#RUN cat /etc/resolv.conf
-#RUN apt-get install add-apt-repository -y ppa:webupd8team/java
-## Install various required sofppa:webupd8team/javatwares
-#RUN apt-get update -y
-#RUN apt-get install -y --force-yes software-properties-common &&\
-#    apt-get install -y --force-yes \
-#	oracle-java7-installer \
-#	oracle-java7-set-default  && \
-#    	rm -rf /var/cache/oracle-jdk7-installer  && \
-#    	apt-get clean  && \
-#    	rm -rf /var/lib/apt/lists/* && \
-#    	apt-get remove --auto-remove  -y --force-yes software-properties-common
-
 
 # Install bcl2fastq
 ADD accessoryfiles /accessoryfiles
@@ -76,21 +61,14 @@ ENV AUGUSTUS_CONFIG_PATH /accessoryfiles/augustus.2.5.5/config/
 
 
 # run this script in your cmd or entrypoint script to mount your nfs mounts
-#RUN chmod +x /root/mount_nfs.sh
-#ENTRYPOINT ["/root/mount_nfs.sh"]
-#COPY pipeline /spades
-#ADD .git /spades
-#WORKDIR /spades
-
-RUN apt-get install -y --force-yes python-pip python-dev git && \
-    pip install biopython argparse regex PyYAML && \
-    pip install --upgrade setuptools
 COPY pipeline /spades
 ADD .git /spades
 WORKDIR /spades
-RUN python setup.py install
-#&&\
-#    apt-get remove --auto-remove  -y --force-yes python-dev python-pip git
+
+RUN apt-get install -y --force-yes python-pip python-dev git && \
+    pip install biopython argparse regex PyYAML && \
+    pip install --upgrade setuptools &&\
+    apt-get remove --auto-remove  -y --force-yes python-dev python-pip git
 
 
 ENV PYTHONPATH=/accessoryfiles/SPAdes-3.6.2-Linux/bin:/accessoryfiles/quast-3.2:$PYTHONPATH
