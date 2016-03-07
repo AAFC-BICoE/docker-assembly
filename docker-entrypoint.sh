@@ -22,8 +22,12 @@ fi;
 
 if [ ! command -v samtools >/dev/null 2>&1 ]; then
     cd /accessoryfiles/samtools*/htslib*/
+    make clean
+    ./configure
     make CPPFLAGS="-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE"
     cd ..
+    make clean
+    ./configure --without-curses
     make DFLAGS="-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE"
 fi;
 

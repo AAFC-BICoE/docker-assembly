@@ -1,3 +1,6 @@
 [submodule "pipeline"]
 	path = pipeline
 	url = https://github.com/AAFC-MBB/blackbox-pipeline.git
+[submodule "parallel_itsx"]
+	path = parallel_itsx
+	url = https://github.com/AAFC-MBB/parallel_itsx

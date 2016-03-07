@@ -30,20 +30,6 @@ RUN apt-get install -y --force-yes \
 # Install bcl2fastq
 ADD accessoryfiles /accessoryfiles
 ENV BCL=bcl2fastq-1.8.4-Linux-x86_64.rpm
-#WORKDIR /accessoryfiles
-## Download FastQC
-#RUN apt-get install -y --force-yes wget unzip && \
-#    wget http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.4.zip && unzip fastqc_v0.11.4.zip && \
-#    wget http://downloads.sourceforge.net/project/bbmap/BBMap_35.82.tar.gz &&  \
-#    wget http://spades.bioinf.spbau.ru/release3.6.2/SPAdes-3.6.2-Linux.tar.gz &&\
-#    wget https://downloads.sourceforge.net/project/quast/quast-3.2.tar.gz && \
-#    wget http://augustus.gobics.de/binaries/augustus.2.5.5.tar.gz && \
-#    wget http://busco.ezlab.org/files/BUSCO_v1.1b1.tar.gz &&\
-#    for clade in bacteria eukaryota fungi; do wget http://busco.ezlab.org/files/${clade}_buscos.tar.gz; tar -zxf ${clade}_buscos.tar.gz; rm ${clade}_buscos.tar.gz; done &&\
-#    apt-get remove --auto-remove  -y --force-yes wget unzip && \
-#    for a in $(ls -1 *.tar.gz); do tar -zxvf $a; rm $a; done && rm *.zip
-
-#ENV PATH /accessoryfiles/augustus.2.5.5/bin:/accessoryfiles/quast-3.2:/accessoryfiles/FastQC:/accessoryfiles/bbmap:/accessoryfiles/SPAdes-3.6.2-Linux/bin:/accessoryfiles/spades:$PATH
 ENV AUGUSTUS_CONFIG_PATH /accessoryfiles/augustus.2.5.5/config/
 
 ## Check if $BCL file exists
@@ -68,6 +54,7 @@ WORKDIR /spades
 RUN apt-get install -y --force-yes python-pip python-dev git && \
     pip install biopython argparse regex PyYAML && \
     pip install --upgrade setuptools &&\
+    python setup.py install &&\
     apt-get remove --auto-remove  -y --force-yes python-dev python-pip git
 
 
