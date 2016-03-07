@@ -26,39 +26,10 @@ RUN apt-get install -y --force-yes \
 	hmmer \
 	openjdk-7-jdk
 
-## Install bbmap and bbduk
-#RUN echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections
-#RUN cat /etc/resolv.conf
-#RUN apt-get install add-apt-repository -y ppa:webupd8team/java
-## Install various required sofppa:webupd8team/javatwares
-#RUN apt-get update -y
-#RUN apt-get install -y --force-yes software-properties-common &&\
-#    apt-get install -y --force-yes \
-#	oracle-java7-installer \
-#	oracle-java7-set-default  && \
-#    	rm -rf /var/cache/oracle-jdk7-installer  && \
-#    	apt-get clean  && \
-#    	rm -rf /var/lib/apt/lists/* && \
-#    	apt-get remove --auto-remove  -y --force-yes software-properties-common
-
 
 # Install bcl2fastq
 ADD accessoryfiles /accessoryfiles
 ENV BCL=bcl2fastq-1.8.4-Linux-x86_64.rpm
-#WORKDIR /accessoryfiles
-## Download FastQC
-#RUN apt-get install -y --force-yes wget unzip && \
-#    wget http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.4.zip && unzip fastqc_v0.11.4.zip && \
-#    wget http://downloads.sourceforge.net/project/bbmap/BBMap_35.82.tar.gz &&  \
-#    wget http://spades.bioinf.spbau.ru/release3.6.2/SPAdes-3.6.2-Linux.tar.gz &&\
-#    wget https://downloads.sourceforge.net/project/quast/quast-3.2.tar.gz && \
-#    wget http://augustus.gobics.de/binaries/augustus.2.5.5.tar.gz && \
-#    wget http://busco.ezlab.org/files/BUSCO_v1.1b1.tar.gz &&\
-#    for clade in bacteria eukaryota fungi; do wget http://busco.ezlab.org/files/${clade}_buscos.tar.gz; tar -zxf ${clade}_buscos.tar.gz; rm ${clade}_buscos.tar.gz; done &&\
-#    apt-get remove --auto-remove  -y --force-yes wget unzip && \
-#    for a in $(ls -1 *.tar.gz); do tar -zxvf $a; rm $a; done && rm *.zip
-
-#ENV PATH /accessoryfiles/augustus.2.5.5/bin:/accessoryfiles/quast-3.2:/accessoryfiles/FastQC:/accessoryfiles/bbmap:/accessoryfiles/SPAdes-3.6.2-Linux/bin:/accessoryfiles/spades:$PATH
 ENV AUGUSTUS_CONFIG_PATH /accessoryfiles/augustus.2.5.5/config/
 
 ## Check if $BCL file exists
@@ -76,20 +47,18 @@ ENV AUGUSTUS_CONFIG_PATH /accessoryfiles/augustus.2.5.5/config/
 
 
 # run this script in your cmd or entrypoint script to mount your nfs mounts
-#RUN chmod +x /root/mount_nfs.sh
-#ENTRYPOINT ["/root/mount_nfs.sh"]
 COPY pipeline /spades
-ADD .git /spades
+ADD parallel_itsx /
 WORKDIR /spades
 
 RUN apt-get install -y --force-yes python-pip python-dev git && \
-    pip install biopython argparse regex && \
+    pip install biopython argparse regex PyYAML && \
     pip install --upgrade setuptools &&\
     python setup.py install &&\
     apt-get remove --auto-remove  -y --force-yes python-dev python-pip git
 
-
-ENV PYTHONPATH=/accessoryfiles/SPAdes-3.6.2-Linux/bin:/accessoryfiles/quast-3.2:$PYTHONPATH
+WORKDIR /
+ENV PYTHONPATH=/parallel_itsx:/accessoryfiles/SPAdes-3.6.2-Linux/bin:/accessoryfiles/quast-3.2:$PYTHONPATH
 
 COPY docker-entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
