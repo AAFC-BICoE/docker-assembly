@@ -48,7 +48,7 @@ ENV AUGUSTUS_CONFIG_PATH /accessoryfiles/augustus.2.5.5/config/
 
 # run this script in your cmd or entrypoint script to mount your nfs mounts
 COPY pipeline /spades
-ADD .git /spades
+ADD parallel_itsx /
 WORKDIR /spades
 
 RUN apt-get install -y --force-yes python-pip python-dev git && \
@@ -57,8 +57,8 @@ RUN apt-get install -y --force-yes python-pip python-dev git && \
     python setup.py install &&\
     apt-get remove --auto-remove  -y --force-yes python-dev python-pip git
 
-
-ENV PYTHONPATH=/accessoryfiles/SPAdes-3.6.2-Linux/bin:/accessoryfiles/quast-3.2:$PYTHONPATH
+WORKDIR /
+ENV PYTHONPATH=/parallel_itsx:/accessoryfiles/SPAdes-3.6.2-Linux/bin:/accessoryfiles/quast-3.2:$PYTHONPATH
 
 COPY docker-entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
