@@ -22,13 +22,13 @@ fi;
 
 if [ ! command -v samtools >/dev/null 2>&1 ]; then
     cd /accessoryfiles/samtools*/htslib*/
-    make clean
-    ./configure
-    make CPPFLAGS="-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE"
-    cd ..
-    make clean
-    ./configure --without-curses
-    make DFLAGS="-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE"
+    make clean >/dev/null 2>&1
+    ./configure >/dev/null 2>&1
+    make CPPFLAGS="-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE" >/dev/null 2>&1
+    cd .. >/dev/null 2>&1
+    make clean >/dev/null 2>&1
+    ./configure --without-curses >/dev/null 2>&1
+    make DFLAGS="-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE" CPPFLAGS="-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE" >/dev/null 2>&1
 fi;
 
 for h in /accessoryfiles/*/ITSx_db/HMMs/*.hmm; do
