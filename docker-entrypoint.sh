@@ -20,6 +20,12 @@ if command -v qualimap >/dev/null 2>&1; then
     sed -i 's/-XX:MaxPermSize=1024m"/-XX:MaxPermSize=1024m -Djava.awt.headless=true"/' $(which qualimap)
 fi;
 
+if [ ! command -v qualimap >/dev/null 2>&1 ]; then
+     cd /accessoryfiles/qualimap*/
+     ./configure --without-curses
+     make
+fi
+
 if [ ! command -v samtools >/dev/null 2>&1 ]; then
     cd /accessoryfiles/samtools*/htslib*/
     make clean >/dev/null 2>&1
@@ -37,41 +43,11 @@ done
 
 
 if [ "$1" = "assemble" ]; then
-
-    if [ -n "$READS" ]; then
-        ARG+=" -n $READS"
-    fi
-    if [ -n "$THREADS" ]; then
-        ARG+=" -t $TREADS"
-    fi
-    if [ -n "$FASTQ_DEST" ]; then
-        ARG+=" -d $FASTQ_DEST"
-    fi
-    if [ -n "$R1_LEN" ]; then
-        ARG+=" -r1 $R1_LEN"
-    fi
-    if [ -n "$R2_LEN" ]; then
-        ARG+=" -r2 $R2_LEN"
-    fi
-    if [ -n "$KMER" ]; then
-        ARG+=" -k $KMER"
-    fi
-    if [ -n "$BASIC" ]; then
-        ARG+=" -b $BASIC"
-    fi
-    if [ -n "$FASTQ" ]; then
-        ARG+=" -F"
-    fi
-    if [ -n "$CLADE" ]; then
-        ARG+=" --clade $CLADE"
-    fi
-    if [ -z "$IN" ]; then
+    if [ -z $2 ]; then
         ARG+=" /data"
     else
-        ARG+=" $IN"
+        ARG+=" ${@:1}"
     fi
-
-
     echo $ARG
     exec MBBspades $ARG
     # Delete compiled python files to check whether this would reduce SPAdes issues
