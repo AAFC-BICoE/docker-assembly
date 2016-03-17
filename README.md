@@ -16,7 +16,7 @@ Obviously, this will require [docker](http://get.docker.io)
 After cloning the git:
 
 ```commandline
-git clone  https://github.com/AAFC-MBB/docker-assembly
+git clone --recursive https://github.com/AAFC-MBB/docker-assembly
 ``` 
 
 Build the image:

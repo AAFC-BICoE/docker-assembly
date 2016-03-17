@@ -20,7 +20,7 @@ files=( http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.4.
         https://bitbucket.org/kokonech/qualimap/downloads/qualimap_v2.2.zip
        )
 
-echo ${files[@]} | xargs -n 1 -P 8 wget -P ${PREFIX}
+echo ${files[@]} | xargs -n 1 -P 8 wget -q -P ${PREFIX}
 
 for clade in bacteria eukaryota fungi; do
     wget http://busco.ezlab.org/files/${clade}_buscos.tar.gz -P ${PREFIX};
@@ -29,16 +29,16 @@ for clade in bacteria eukaryota fungi; do
 done
 
 for a in $(ls -1 ${PREFIX}/*.tar.gz); do
-tar -zxf $a;
+tar -zxf $a $PREFIX;
 rm $a;
 done
 
 for a in $(ls -1 ${PREFIX}/*.tar.bz2); do
- tar -jxf $a;
+ tar -jxf $a -C $PREFIX;
  rm $a;
 done
 
 for a in $(ls -1 ${PREFIX}/*.zip); do
- unzip $a;
+ unzip $a -d -C $PREFIX;
  rm $a;
 done
