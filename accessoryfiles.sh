@@ -39,6 +39,6 @@ for a in $(ls -1 ${PREFIX}/*.tar.bz2); do
 done
 
 for a in $(ls -1 ${PREFIX}/*.zip); do
- unzip $a -d $PREFIX;
+ unzip -qq $a -d $PREFIX;
  rm $a;
 done
