@@ -24,7 +24,7 @@ echo ${files[@]} | xargs -n 1 -P 8 wget -q -P ${PREFIX}
 
 for clade in bacteria eukaryota fungi; do
     wget http://busco.ezlab.org/files/${clade}_buscos.tar.gz -P ${PREFIX};
-    tar -zxf ${PREFIX}/${clade}_buscos.tar.gz;
+    tar -zxf ${PREFIX}/${clade}_buscos.tar.gz -C ${PREFIX};
     rm ${PREFIX}/${clade}_buscos.tar.gz;
 done
 
