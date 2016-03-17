@@ -29,7 +29,7 @@ for clade in bacteria eukaryota fungi; do
 done
 
 for a in $(ls -1 ${PREFIX}/*.tar.gz); do
-tar -zxf $a $PREFIX;
+tar -zxf $a -C $PREFIX;
 rm $a;
 done
 
