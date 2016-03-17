@@ -61,8 +61,7 @@ WORKDIR /
 ENV PYTHONPATH=/parallel_itsx:/accessoryfiles/SPAdes-3.6.2-Linux/bin:/accessoryfiles/quast-3.2:$PYTHONPATH
 
 COPY docker-entrypoint.sh /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]
-CMD ["assemble"]
+ENTRYPOINT ["/entrypoint.sh assemble"]
 # Useful commandsst
 #docker build -t remotepythondocker .
 #docker run -e NFS_MOUNT=192.168.1.18:/mnt/zvolume1 --privileged -it -v /home/blais/PycharmProjects/SPAdesPipeline:/spades -v /media/miseq/:/media/miseq -v /home/blais/Downloads/accessoryfiles:/accessoryfiles --name pythondocker remotepythondocker
