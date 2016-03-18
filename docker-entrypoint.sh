@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 
 ARG=""
 # Add subdirectories to the PATH
@@ -20,13 +21,13 @@ if command -v qualimap >/dev/null 2>&1; then
     sed -i 's/-XX:MaxPermSize=1024m"/-XX:MaxPermSize=1024m -Djava.awt.headless=true"/' $(which qualimap)
 fi;
 
-if [ ! command -v qualimap >/dev/null 2>&1 ]; then
+if ! command -v qualimap >/dev/null 2>&1 ; then
      cd /accessoryfiles/qualimap*/
      ./configure --without-curses
      make
 fi
 
-if [ ! command -v samtools >/dev/null 2>&1 ]; then
+if ! command -v samtools >/dev/null 2>&1 ; then
     cd /accessoryfiles/samtools*/htslib*/
     make clean >/dev/null 2>&1
     ./configure >/dev/null 2>&1
@@ -38,7 +39,10 @@ if [ ! command -v samtools >/dev/null 2>&1 ]; then
 fi;
 
 for h in /accessoryfiles/*/ITSx_db/HMMs/*.hmm; do
-    hmmpress ${h} >/dev/null 2>&1;
+    # for some reason N.hmm is empty
+    if [ ${h: -5} != "N.hmm" ]; then
+        hmmpress -f ${h} >/dev/null 2>&1;
+    fi
 done
 
 
@@ -46,7 +50,8 @@ if [ "$1" = "assemble" ]; then
     if [ -z $2 ]; then
         ARG+=" /data"
     else
-        ARG+=" ${@:1}"
+        # add arguments specified in the docker run command
+        ARG+=" ${@:2}"
     fi
     echo $ARG
     exec MBBspades $ARG

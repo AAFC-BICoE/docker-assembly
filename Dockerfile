@@ -60,6 +60,7 @@ RUN apt-get install -y --force-yes python-pip python-dev git && \
 WORKDIR /
 ENV PYTHONPATH=/parallel_itsx:/accessoryfiles/SPAdes-3.6.2-Linux/bin:/accessoryfiles/quast-3.2:$PYTHONPATH
 
+COPY .git /spades
 COPY docker-entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "assemble"]
 # Useful commandsst
