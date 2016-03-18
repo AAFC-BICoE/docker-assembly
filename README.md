@@ -28,7 +28,7 @@ docker build -t docker-assembly docker-assembly/
 ### Execution
 
 ```comandline
-docker run -u $(id) -v path/to/fastq/data -v path/to/accessory/files:/accessoryfiles ....
+docker run -u $(id -u) -v path/to/fastq/data -v path/to/accessory/files:/accessoryfiles ....
 ```
 
 Additional run parameters are specified after the above command. The options available are found in [blackbox-pipeline] 

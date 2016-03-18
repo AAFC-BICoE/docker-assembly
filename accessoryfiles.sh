@@ -18,6 +18,8 @@ files=( http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.4.
         http://busco.ezlab.org/files/BUSCO_v1.1b1.tar.gz
         https://github.com/samtools/samtools/releases/download/1.3/samtools-1.3.tar.bz2
         https://bitbucket.org/kokonech/qualimap/downloads/qualimap_v2.2.zip
+        https://github.com/BenLangmead/bowtie2/releases/download/v2.2.8/bowtie2-2.2.8-linux-x86_64.zip
+        http://microbiology.se/sw/ITSx_1.0.11.tar.gz
        )
 
 echo ${files[@]} | xargs -n 1 -P 8 wget -q -P ${PREFIX}
