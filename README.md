@@ -7,22 +7,23 @@ Assembly pipeline using Docker and SPAdes
 
 ### Requirements
 To accomodate space concerns, we packaged [accessoryfiles script](accessoryfiles.sh) upon execution of this script, the 
-script will create an accessoryfiles folder for the docker container which will be need later
+script will create an accessoryfiles folder for the docker container which will be needed later
  
-Obviously, this will require [docker](http://get.docker.io) 
+Obviously, this will require [docker](https://docs.docker.com/engine/installation/) 
 
 ### Installation
-
-After cloning the git:
-
-```commandline
-git clone --recursive https://github.com/AAFC-MBB/docker-assembly
-``` 
 
 Build the image:
 
 ```commandline
-docker build -t docker-assembly docker-assembly/
+docker build -t docker-assembly https://github.com/AAFC-MBB/docker-assembly
+```
+
+You may need to download the required packages for the pipeline to run, you will have to specify their location on execution 
+
+```commandline
+chmod +x accessoryfiles.sh
+./accessoryfiles.sh
 ```
 
 ### Execution

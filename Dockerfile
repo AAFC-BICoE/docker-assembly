@@ -1,7 +1,7 @@
 # Dockerfile for OLCspades genome assembly pipeline
-FROM ubuntu:14.04.3
+FROM ubuntu:14.04
 
-MAINTAINER Mike Knowles <michael.knowles@canada.ca>
+MAINTAINER Mike Knowles <michael.knowles2@canada.ca>
 
 ENV DEBIAN_FRONTEND noninteractive
 RUN locale-gen en_US en_US.UTF-8
@@ -19,7 +19,6 @@ RUN apt-get install -y --force-yes \
 	libbz2-dev \
 	nano \
 	xsltproc \
-	fastqc \
 	python \
 	python-matplotlib \
 	ncbi-blast+ \
@@ -30,7 +29,7 @@ RUN apt-get install -y --force-yes \
 # Install bcl2fastq
 ADD accessoryfiles /accessoryfiles
 ENV BCL=bcl2fastq-1.8.4-Linux-x86_64.rpm
-ENV AUGUSTUS_CONFIG_PATH /accessoryfiles/augustus.2.5.5/config/
+ENV AUGUSTUS_CONFIG_PATH /accessoryfiles/augustus-3.2.1/config/
 
 ## Check if $BCL file exists
 #RUN if [ ! -f $BCL ]; then ftp://webdata:webdata@ussd-ftp.illumina.com/Downloads/Software/bcl2fastq/$BCL; fi
