@@ -10,7 +10,7 @@ else
 fi
 mkdir -p ${PREFIX}
 
-files=( http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.4.zip
+files=( http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.5.zip
         http://downloads.sourceforge.net/project/bbmap/BBMap_35.82.tar.gz
         http://spades.bioinf.spbau.ru/release3.6.2/SPAdes-3.6.2-Linux.tar.gz
         https://downloads.sourceforge.net/project/quast/quast-3.2.tar.gz
