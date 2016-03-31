@@ -38,6 +38,8 @@ if ! command -v samtools >/dev/null 2>&1 ; then
     make DFLAGS="-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE" CPPFLAGS="-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE" >/dev/null 2>&1
 fi;
 
+#for c in hmmpress samtools
+
 for h in /accessoryfiles/*/ITSx_db/HMMs/*.hmm; do
     # for some reason N.hmm is empty
     if [ ${h: -5} != "N.hmm" ]; then

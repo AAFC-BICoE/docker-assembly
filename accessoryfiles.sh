@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 set -e
 
+for c in unzip wget tar; do
+   if  ! command -v ${c}; then
+       apt-get update
+       apt-get install ${c}
+   fi
+done;
+
 if [ -z $1 ]; then
     PREFIX="${PWD}/accessoryfiles"
 elif [ -d $1 ]; then
@@ -14,7 +21,6 @@ files=( http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.5.
         http://downloads.sourceforge.net/project/bbmap/BBMap_35.82.tar.gz
         http://spades.bioinf.spbau.ru/release3.6.2/SPAdes-3.6.2-Linux.tar.gz
         https://downloads.sourceforge.net/project/quast/quast-3.2.tar.gz
-        http://bioinf.uni-greifswald.de/augustus/binaries/augustus-3.2.1.tar.gz
         http://busco.ezlab.org/files/BUSCO_v1.1b1.tar.gz
         https://github.com/samtools/samtools/releases/download/1.3/samtools-1.3.tar.bz2
         https://bitbucket.org/kokonech/qualimap/downloads/qualimap_v2.2.zip
